@@ -38,7 +38,7 @@ public class ActivityMain extends ActionBarActivity {
 
     public final String SETTING = "setting";
     public final String SEND_MSG = "send message";
-    public final String PHONE = "65335300"; // set up the phone no. here
+    public final String PHONE = "85265335300"; // set up the phone no. here
     public final int DELAY = 2000;
 
     public final String SENT = "sent";
