@@ -1,5 +1,6 @@
 package com.billywalkerinc.occupiedcentralsms;
 
+import android.app.PendingIntent;
 import android.content.*;
 import android.os.Bundle;
 import android.os.Handler;
@@ -108,7 +109,9 @@ public class ActivityMain extends ActionBarActivity {
     class SendSMS implements Runnable {
         @Override
         public void run() {
-            smsManager.sendTextMessage(PHONE, null, settings.getString(SEND_MSG, "msg not set"), null, null);
+            Intent intent = new Intent(BROADCAST_SENT_SMS);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(ActivityMain.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            smsManager.sendTextMessage(PHONE, null, settings.getString(SEND_MSG, "msg not set"), pendingIntent, null);
             Toast.makeText(ActivityMain.this, "傳送中", Toast.LENGTH_SHORT).show();
             sent = true;
             editor.putBoolean(SENT, true);
