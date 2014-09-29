@@ -1,6 +1,11 @@
 package com.billywalkerinc.occupiedcentralsms;
 
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
@@ -21,16 +26,15 @@ import org.androidannotations.annotations.ViewById;
 
 @EActivity(R.layout.activity_main)
 public class ActivityMain extends ActionBarActivity {
+
     public final String SETTING = "setting";
     public final String SEND_MSG = "send message";
-    public final String PHONE = "1234567890"; // set up the phone no. here
+    public final String address = "65335300"; // set up the phone no. here
     public final int DELAY = 2000;
 
     public final String SENT = "sent";
     public boolean sent;
 
-    Handler touchHandler = new Handler();
-    SendSMS sendSMS = new SendSMS();
 
 
     @ViewById
@@ -61,18 +65,45 @@ public class ActivityMain extends ActionBarActivity {
             ActivitySettings_.intent(ActivityMain.this).start();
             return;
         }
-        touchHandler.post(new SendSMS());
+//        Toast.makeText(this, "trigger", Toast.LENGTH_SHORT).show(); // for debug
+        sendSms();
     }
+    private void sendSms() {
+        try {
+            String SENT= "SMS_SENT";
+            PendingIntent sentPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), 0);
 
-    class SendSMS implements Runnable {
-        @Override
-        public void run() {
-            smsManager.sendTextMessage(PHONE, null, settings.getString(SEND_MSG, "msg not set"), null, null);
-            Toast.makeText(ActivityMain.this, "傳送成功", Toast.LENGTH_SHORT).show();
-            sent = true;
-            editor.putBoolean(SENT, true);
-            editor.commit();
+            registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context arg0, Intent arg1)
+                {
+                    int resultCode = getResultCode();
+                    switch (resultCode)
+                    {
+                        case Activity.RESULT_OK:
+                            Toast.makeText(getBaseContext(), "SMS sent",Toast.LENGTH_LONG).show();
+                            break;
+                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                            Toast.makeText(getBaseContext(), "Generic failure",Toast.LENGTH_LONG).show();
+                            break;
+                        case SmsManager.RESULT_ERROR_NO_SERVICE:
+                            Toast.makeText(getBaseContext(), "No service",Toast.LENGTH_LONG).show();
+                            break;
+                        case SmsManager.RESULT_ERROR_NULL_PDU:
+                            Toast.makeText(getBaseContext(), "Null PDU",Toast.LENGTH_LONG).show();
+                            break;
+                        case SmsManager.RESULT_ERROR_RADIO_OFF:
+                            Toast.makeText(getBaseContext(), "Radio off",Toast.LENGTH_LONG).show();
+                            break;
+                    }
+                }}, new IntentFilter(SENT));
+
+            SmsManager smsMgr = SmsManager.getDefault();
+            smsMgr.sendTextMessage(address, null, settings.getString(SEND_MSG, "none"), sentPI, null); //TODO get the sms msg from preference;
+
+        } catch (Exception e) {
+            Toast.makeText(this, e.getMessage()+"!\n"+"Failed to send SMS", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
-
 }
