@@ -36,16 +36,12 @@ public class ActivityMain extends ActionBarActivity {
     public final String SENT = "sent";
     public boolean sent;
 
-    Handler touchHandler = new Handler();
-    SendSMS sendSMS = new SendSMS();
-
 
     @ViewById
     Button btnSend;
 
     SharedPreferences settings;
     SharedPreferences.Editor editor;
-    SmsManager smsManager;
 
 
     private BroadcastReceiver bReceiver = new BroadcastReceiver() {
@@ -64,7 +60,6 @@ public class ActivityMain extends ActionBarActivity {
 
     @AfterViews
     void onViewInjected() {
-        smsManager = SmsManager.getDefault();
         settings = getSharedPreferences(SETTING, 0);
         editor = settings.edit();
         sent = settings.getBoolean(SENT, false);
@@ -103,20 +98,15 @@ public class ActivityMain extends ActionBarActivity {
             ActivitySettings_.intent(ActivityMain.this).start();
             return;
         }
-        touchHandler.post(new SendSMS());
+        sendSms();
     }
 
-    class SendSMS implements Runnable {
-        @Override
-        public void run() {
-            Intent intent = new Intent(BROADCAST_SENT_SMS);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(ActivityMain.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            smsManager.sendTextMessage(PHONE, null, settings.getString(SEND_MSG, "msg not set"), pendingIntent, null);
-            Toast.makeText(ActivityMain.this, "傳送中", Toast.LENGTH_SHORT).show();
-            sent = true;
-            editor.putBoolean(SENT, true);
-            editor.commit();
-        }
+    private void sendSms(){
+        Intent intent = new Intent(BROADCAST_SENT_SMS);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(ActivityMain.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        SmsManager.getDefault().sendTextMessage(PHONE, null, settings.getString(SEND_MSG, "msg not set"), pendingIntent, null);
+        Toast.makeText(ActivityMain.this, "傳送中", Toast.LENGTH_SHORT).show();
     }
+
 
 }
