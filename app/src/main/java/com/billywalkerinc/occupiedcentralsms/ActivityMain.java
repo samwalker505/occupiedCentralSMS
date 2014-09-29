@@ -1,5 +1,8 @@
 package com.billywalkerinc.occupiedcentralsms;
 
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBarActivity;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -14,6 +17,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.androidannotations.annotations.AfterViews;
@@ -23,9 +27,13 @@ import org.androidannotations.annotations.LongClick;
 import org.androidannotations.annotations.Touch;
 import org.androidannotations.annotations.ViewById;
 
+import java.util.GregorianCalendar;
+
 
 @EActivity(R.layout.activity_main)
 public class ActivityMain extends ActionBarActivity {
+    public static final String BROADCAST_SENT_SMS = "com.billywalkerinc.occupiedcentralsm.sms.sent";
+    public static final String KEY_SMS_SENT_RESULT = "sms_sent_result_code";
 
     public final String SETTING = "setting";
     public final String SEND_MSG = "send message";
@@ -45,12 +53,47 @@ public class ActivityMain extends ActionBarActivity {
     SmsManager smsManager;
 
 
+    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BROADCAST_SENT_SMS)) {
+                if(intent.getBooleanExtra(KEY_SMS_SENT_RESULT, false)) {
+                    Toast.makeText(ActivityMain.this, "傳送成功", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(ActivityMain.this, "傳送失敗, 請重試", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    };
+
+
     @AfterViews
     void onViewInjected() {
         smsManager = SmsManager.getDefault();
         settings = getSharedPreferences(SETTING, 0);
         editor = settings.edit();
         sent = settings.getBoolean(SENT, false);
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        /** broadcast **/
+        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+
+        IntentFilter filter4SendSms = new IntentFilter();
+        filter4SendSms.addAction(BROADCAST_SENT_SMS);
+        bManager.registerReceiver(bReceiver, filter4SendSms);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
+        bManager.unregisterReceiver(bReceiver);
     }
 
     @Click(R.id.btnSettings)
