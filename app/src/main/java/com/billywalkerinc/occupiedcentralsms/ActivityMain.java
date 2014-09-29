@@ -1,5 +1,6 @@
 package com.billywalkerinc.occupiedcentralsms;
 
+import android.support.v7.app.ActionBarActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 
@@ -145,7 +146,7 @@ public class ActivityMain extends ActionBarActivity {
             smsMgr.sendTextMessage(address, null, settings.getString(SEND_MSG, "none"), sentPI, null); //TODO get the sms msg from preference;
 
         } catch (Exception e) {
-            Toast.makeText(this, e.getMessage()+"!\n"+"Failed to send SMS", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, e.getMessage() + "!\n" + "Failed to send SMS", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
