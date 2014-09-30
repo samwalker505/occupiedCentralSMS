@@ -1,5 +1,6 @@
 package com.billywalkerinc.occupiedcentralsms;
 
+import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -38,13 +39,14 @@ public class ActivityMain extends ActionBarActivity {
 
     public final String SETTING = "setting";
     public final String SEND_MSG = "send message";
-    public final String PHONE = "91463653"; // set up the phone no. here 學聯BY DEFAULT
-    public final int DELAY = 2000;
+    public final String PHONE = "91463653"; // set up the phone no. here 學聯(文律師）BY DEFAULT
 
     public final String SENT = "sent";
     public boolean sent;
 
     SmsManager mysmsManager;
+
+    SMSReceiver smsReceiver;
 
 
     @ViewById
@@ -52,7 +54,6 @@ public class ActivityMain extends ActionBarActivity {
 
     SharedPreferences settings;
     SharedPreferences.Editor editor;
-
 
     @AfterViews
     void onViewInjected() {
@@ -80,6 +81,8 @@ public class ActivityMain extends ActionBarActivity {
     private void sendSms(String phoneNum){
 
         String smsTEXT = settings.getString(SEND_MSG, "none");
+
+
         Toast.makeText(this, smsTEXT, Toast.LENGTH_SHORT).show();
 
         if (smsTEXT.length() > 139) {
@@ -89,7 +92,7 @@ public class ActivityMain extends ActionBarActivity {
         try {
             //Initializing SMS Manager and sending the message to the typed phone number
 
-            mysmsManager.sendTextMessage(phoneNum, null, smsTEXT, null, null);
+            mysmsManager.sendTextMessage(phoneNum, null, smsTEXT, null, createDeliveredIntent());
 
             Toast.makeText(getApplicationContext(), "成功送出!", Toast.LENGTH_LONG).show();
 
@@ -102,5 +105,10 @@ public class ActivityMain extends ActionBarActivity {
 
             e.printStackTrace();
         }
+    }
+
+    private PendingIntent createDeliveredIntent(){
+        Intent intent = new Intent();
+        return PendingIntent.getBroadcast(this, RESULT_OK, intent, 0);
     }
 }
