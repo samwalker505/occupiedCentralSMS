@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">OccupiedCentralSMS</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">請先按 設定，設定個人資料，有需要時請按 發送緊急信息 ，會直接發送資料到學聯 </string>
     <string name="action_settings">Settings</string>
 
     <string name="title_activity_settings">設定</string>

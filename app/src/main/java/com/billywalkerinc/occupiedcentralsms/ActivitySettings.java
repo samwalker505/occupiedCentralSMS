@@ -21,6 +21,7 @@ public class ActivitySettings extends ActionBarActivity {
     public final String C_NAME = "chinese_name";
     public final String E_NAME = "english_name";
     public final String PHONE = "phone";
+    final String SEX = "sex";
     public final String ID = "id";
     public final String CUSTOM_MSG = "custom message";
     public final String SEND_MSG = "send message";
@@ -36,10 +37,6 @@ public class ActivitySettings extends ActionBarActivity {
 
     @ViewById
     EditText etxtId;
-
-    @ViewById
-    EditText etxtCustom;
-
 
     SharedPreferences settings;
     SharedPreferences.Editor editor;
@@ -69,7 +66,6 @@ public class ActivitySettings extends ActionBarActivity {
         etxtEName.setText(getStringInSetting(E_NAME));
         etxtPhone.setText(getStringInSetting(PHONE));
         etxtId.setText(getStringInSetting(ID));
-        etxtCustom.setText(getStringInSetting(CUSTOM_MSG));
     }
 
     void saveData() {
@@ -79,15 +75,12 @@ public class ActivitySettings extends ActionBarActivity {
         eName = etxtEName.getText().toString();
         phone = etxtPhone.getText().toString();
         id = etxtId.getText().toString();
-        customMsg = etxtCustom.getText().toString();
-
-        sendMsg = "求助:\n"+"中文姓名： "+cName+"\n"+"英文姓名： "+eName+"\n"+"電話號碼： "+phone+"\n"+"身份證號碼： "+id+"\n"+"自定義信息： "+customMsg+"\n";
+        sendMsg = "求助:\n"+cName+"\n"+eName+"\n"+phone+"\n"+id+"\n";
 
         editor.putString(C_NAME, cName);
         editor.putString(E_NAME, eName);
         editor.putString(PHONE, phone);
         editor.putString(ID,id);
-        editor.putString(CUSTOM_MSG, customMsg);
         editor.putString(SEND_MSG, sendMsg);
         editor.putBoolean("set", true);
         editor.commit();

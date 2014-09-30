@@ -33,16 +33,18 @@ import java.util.GregorianCalendar;
 
 @EActivity(R.layout.activity_main)
 public class ActivityMain extends ActionBarActivity {
-    public static final String BROADCAST_SENT_SMS = "com.billywalkerinc.occupiedcentralsm.sms.sent";
+    public static final String BROADCAST_SENT_SMS = "com.billywalkerinc.occupiedcentralsms.sms.sent";
     public static final String KEY_SMS_SENT_RESULT = "sms_sent_result_code";
 
     public final String SETTING = "setting";
     public final String SEND_MSG = "send message";
-    public final String PHONE = "85265335300"; // set up the phone no. here
+    public final String PHONE = "91463653"; // set up the phone no. here 學聯BY DEFAULT
     public final int DELAY = 2000;
 
     public final String SENT = "sent";
     public boolean sent;
+
+    SmsManager mysmsManager;
 
 
     @ViewById
@@ -52,46 +54,12 @@ public class ActivityMain extends ActionBarActivity {
     SharedPreferences.Editor editor;
 
 
-    private BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BROADCAST_SENT_SMS)) {
-                if(intent.getBooleanExtra(KEY_SMS_SENT_RESULT, false)) {
-                    Toast.makeText(ActivityMain.this, "傳送成功", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    Toast.makeText(ActivityMain.this, "傳送失敗, 請重試", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    };
-
-
     @AfterViews
     void onViewInjected() {
         settings = getSharedPreferences(SETTING, 0);
         editor = settings.edit();
         sent = settings.getBoolean(SENT, false);
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        /** broadcast **/
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
-
-        IntentFilter filter4SendSms = new IntentFilter();
-        filter4SendSms.addAction(BROADCAST_SENT_SMS);
-        bManager.registerReceiver(bReceiver, filter4SendSms);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(this);
-        bManager.unregisterReceiver(bReceiver);
+        mysmsManager = SmsManager.getDefault();
     }
 
     @Click(R.id.btnSettings)
@@ -106,13 +74,33 @@ public class ActivityMain extends ActionBarActivity {
             ActivitySettings_.intent(ActivityMain.this).start();
             return;
         }
-        sendSms();
+        sendSms(PHONE);
     }
 
-    private void sendSms(){
-        Intent intent = new Intent(BROADCAST_SENT_SMS);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(ActivityMain.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        SmsManager.getDefault().sendTextMessage(PHONE, null, settings.getString(SEND_MSG, "msg not set"), pendingIntent, null);
-        Toast.makeText(ActivityMain.this, "傳送中", Toast.LENGTH_SHORT).show();
+    private void sendSms(String phoneNum){
+
+        String smsTEXT = settings.getString(SEND_MSG, "none");
+        Toast.makeText(this, smsTEXT, Toast.LENGTH_SHORT).show();
+
+        if (smsTEXT.length() > 139) {
+            Toast.makeText(this, "文字太多", Toast.LENGTH_SHORT).show();
+        }
+
+        try {
+            //Initializing SMS Manager and sending the message to the typed phone number
+
+            mysmsManager.sendTextMessage(phoneNum, null, smsTEXT, null, null);
+
+            Toast.makeText(getApplicationContext(), "成功送出!", Toast.LENGTH_LONG).show();
+
+            //to close the app after sending your message, you can add the finish(); method at the end as shown below
+            //finish();
+
+        } catch (Exception e) {
+
+            Toast.makeText(getApplicationContext(), "傳送失敗！", Toast.LENGTH_LONG).show();
+
+            e.printStackTrace();
+        }
     }
 }

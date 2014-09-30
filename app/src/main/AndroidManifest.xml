@@ -3,6 +3,8 @@
     package="com.billywalkerinc.occupiedcentralsms" >
 
     <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
 
     <application
@@ -23,15 +25,6 @@
             android:name=".ActivitySettings_"
             android:label="@string/title_activity_settings" >
         </activity>
-        <receiver
-            android:name=".SmsSentReceiver"
-            android:enabled="true"
-            android:exported="true"
-            >
-            <intent-filter>
-                <action android:name="com.billywalkerinc.occupiedcentralsm.sms.sent"/>
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>
