@@ -94,7 +94,7 @@ public class ActivityMain extends ActionBarActivity {
 
             mysmsManager.sendTextMessage(phoneNum, null, smsTEXT, null, createDeliveredIntent());
 
-            Toast.makeText(getApplicationContext(), "成功送出!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "送出中!", Toast.LENGTH_LONG).show();
 
             //to close the app after sending your message, you can add the finish(); method at the end as shown below
             //finish();
